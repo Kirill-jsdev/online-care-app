@@ -11,7 +11,7 @@ type NurseRegisterFormData = {
   experience_since: string;
 };
 
-export default function NurseRegisterPage() {
+const NurseRegisterPage = () => {
   const { register, handleSubmit } = useForm<NurseRegisterFormData>();
 
   const onSubmit = (data: NurseRegisterFormData) => {
@@ -30,4 +30,6 @@ export default function NurseRegisterPage() {
       </form>
     </div>
   );
-}
+};
+
+export default NurseRegisterPage;

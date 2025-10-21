@@ -17,7 +17,7 @@ const getNurses = async () => {
   return data as Nurse[];
 };
 
-export default function NurseListPage() {
+const NurseListPage = () => {
   const {
     data: nurses,
     isLoading,
@@ -65,4 +65,6 @@ export default function NurseListPage() {
       </ul>
     </div>
   );
-}
+};
+
+export default NurseListPage;

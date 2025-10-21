@@ -8,14 +8,8 @@ interface Nurse {
   id: number;
   first_name: string;
   last_name: string;
+  experience_since: string;
 }
-
-// Separate API function for better organization
-const getNurses = async () => {
-  const { data, error } = await supabase.from("nurse").select("*");
-  if (error) throw error;
-  return data as Nurse[];
-};
 
 const NurseListPage = () => {
   const {
@@ -68,3 +62,10 @@ const NurseListPage = () => {
 };
 
 export default NurseListPage;
+
+//Supabase function to get all nurses
+const getNurses = async () => {
+  const { data, error } = await supabase.from("nurse").select("*");
+  if (error) throw error;
+  return data as Nurse[];
+};

@@ -12,7 +12,7 @@ interface Nurse {
 
 // Separate API function for better organization
 const getNurses = async () => {
-  const { data, error } = await supabase().from("nurse").select("*");
+  const { data, error } = await supabase.from("nurse").select("*");
   if (error) throw error;
   return data as Nurse[];
 };

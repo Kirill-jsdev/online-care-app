@@ -21,7 +21,7 @@ const NurseRegisterPage = () => {
     setLoading(true);
     setMessage(null);
     try {
-      const { data: inserted, error } = await supabase()
+      const { data: inserted, error } = await supabase
         .from("nurse")
         .insert([
           {

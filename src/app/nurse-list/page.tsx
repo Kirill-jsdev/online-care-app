@@ -53,7 +53,7 @@ const NurseListPage = () => {
       <ul className="space-y-2">
         {nurses?.map((nurse) => (
           <li key={nurse.id} className="p-3 bg-white rounded shadow hover:shadow-md transition-shadow">
-            {nurse.first_name} {nurse.last_name}
+            {nurse.first_name} {nurse.last_name} {`(Experience Since: ${nurse.experience_since})`}
           </li>
         ))}
       </ul>

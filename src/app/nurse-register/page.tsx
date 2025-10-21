@@ -2,8 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { supabase } from "@/config/supabaseClient";
 
 type NurseRegisterFormData = {
   first_name: string;
@@ -13,9 +14,37 @@ type NurseRegisterFormData = {
 
 const NurseRegisterPage = () => {
   const { register, handleSubmit } = useForm<NurseRegisterFormData>();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
-  const onSubmit = (data: NurseRegisterFormData) => {
-    console.log(data.experience_since);
+  const onSubmit = async (data: NurseRegisterFormData) => {
+    setLoading(true);
+    setMessage(null);
+    try {
+      const { data: inserted, error } = await supabase()
+        .from("nurse")
+        .insert([
+          {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            experience_since: data.experience_since,
+          },
+        ])
+        .select();
+
+      if (error) {
+        console.error("Supabase insert error:", error);
+        setMessage(`Error: ${error.message}`);
+      } else {
+        setMessage("Nurse registered successfully.");
+        console.log("Inserted:", inserted);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -26,7 +55,10 @@ const NurseRegisterPage = () => {
         <Input type="text" {...register("first_name")} placeholder="First Name" required />
         <Input type="text" {...register("last_name")} placeholder="Last Name" required />
         <Input type="date" {...register("experience_since")} placeholder="Experience Since" required />
-        <Button type="submit">Register</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </Button>
+        {message && <p className="text-sm">{message}</p>}
       </form>
     </div>
   );

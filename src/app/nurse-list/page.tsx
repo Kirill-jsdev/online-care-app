@@ -1,50 +1,64 @@
 "use client";
 
 import { supabase } from "@/config/supabaseClient";
-import React, { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import React from "react";
 
 interface Nurse {
   id: number;
   first_name: string;
   last_name: string;
-  // Add other nurse fields as needed
 }
 
+// Separate API function for better organization
+const getNurses = async () => {
+  const { data, error } = await supabase().from("nurse").select("*");
+  if (error) throw error;
+  return data as Nurse[];
+};
+
 export default function NurseListPage() {
-  const [nurses, setNurses] = useState<Nurse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: nurses,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["nurses"],
+    queryFn: getNurses,
+  });
 
-  useEffect(() => {
-    async function fetchNurses() {
-      try {
-        const { data, error } = await supabase().from("nurse").select("*");
+  if (isLoading) {
+    return (
+      <div className="p-4 flex justify-center">
+        <div>Loading nurses...</div>
+      </div>
+    );
+  }
 
-        console.log("Fetched nurses:", data);
-
-        if (error) throw error;
-
-        setNurses(data || []);
-      } catch (e) {
-        console.error("Error fetching nurses:", e);
-        setError(e instanceof Error ? e.message : "Failed to fetch nurses");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchNurses();
-  }, []);
-
-  if (isLoading) return <div>Loading nurses...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="p-4">
+        <div className="text-red-500">Error: {error.message}</div>
+        <button onClick={() => refetch()} className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-2">
-      <h1>Nurse List Page</h1>
-      <ul>
-        {nurses.map((nurse) => (
-          <li key={nurse.id}>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Nurse List</h1>
+        <button onClick={() => refetch()} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          Refresh
+        </button>
+      </div>
+
+      <ul className="space-y-2">
+        {nurses?.map((nurse) => (
+          <li key={nurse.id} className="p-3 bg-white rounded shadow hover:shadow-md transition-shadow">
             {nurse.first_name} {nurse.last_name}
           </li>
         ))}
